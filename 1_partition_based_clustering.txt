@@ -1,0 +1,41 @@
+# Install and load the "factoextra" package 
+#install.packages("factoextra") 
+library (factoextra) 
+# Install and load the "cluster" package 
+#install.packages("cluster") 
+library (cluster) 
+data <- read.csv("iris.csv", row.names = 1) 
+df <- scale (data) 
+# Set a seed for reproducibility 
+set.seed(112) 
+# Perform k-means clustering on the scaled data with 3 clusters 
+fit <- kmeans (df, 3) 
+#Access the size of each cluster 
+fit$size 
+# Access the within-cluster sum of squares for each cluster 
+fit$withinss 
+# Access the total within-cluster sum of squares 
+fit$tot.withinss # Within Cluster Sum of Squares (WCSS) 
+Kmax <- 15 
+WCSS <- rep (NA, Kmax) 
+nClust <- list() 
+# Loop through different values of k 
+for (i in 1: Kmax) { 
+# Fit k-means clustering for each k 
+fit <- kmeans (df, i) 
+WCSS[i] <- fit$tot.withinss 
+nClust[[i]] <- fit$size 
+} 
+# Plot the elbow method to determine the optimal number of 
+clusters 
+plot (1: Kmax, WCSS, type = "b", pch=19)
+# Visualize the optimal number of clusters using the NbClust 
+function  
+fviz_nbclust(df, kmeans, method = "wss") 
+#Perform K-Medoids clustering with 3 clusters using the 
+"manhattan" metric 
+fit <- pam(df, 3, metric = "manhattan") 
+print (fit) 
+# Visualize the optimal number of clusters using the silhouette 
+method  
+fviz_nbclust(df, pam, method = "silhouette") 

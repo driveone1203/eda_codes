@@ -1,0 +1,20 @@
+rm(list=ls())
+data <- read.csv('CreditWorthiness_TRAIN.csv', stringsAsFactors = 
+T) 
+logreg <- glm(formula = data$creditScore ~., family='binomial', 
+data=data) 
+summary(logreg) 
+logitrain <- predict(logreg, type='response') 
+plot(logitrain) 
+tapply(logitrain, data$creditScore, mean) 
+TEST_DATA <- read.csv('CreditWorthiness_TEST.csv', 
+stringsAsFactors = T) 
+logitest <- predict(logreg, newdata = TEST_DATA, type='response') 
+plot(logitest) 
+tapply(logitest, TEST_DATA$creditScore, mean) 
+TEST_DATA[logitest <= 0.7, 'LogiTest'] = 'bad' 
+TEST_DATA[logitest > 0.7, 'LogiTest'] = 'good' 
+# install.packages('caret') 
+library('caret') 
+confusionMatrix(table(TEST_DATA[, 5], TEST_DATA[, 6]), 
+positive='good')

@@ -1,0 +1,20 @@
+library(class) 
+library(caret) 
+rm(list=ls()) 
+data <- read.csv("CreditWorthiness.csv", stringsAsFactors = T) 
+str(data) 
+summary(data) 
+plot(data) 
+data$Cdur <- as.integer(data$Cdur) 
+data$Cpur <- as.integer(data$Cpur) 
+data$Camt <- as.integer(data$Camt) 
+data$age <- as.integer(data$age) 
+data[, -5] <- scale(data[, -5]) 
+set.seed(123) 
+train_indices <- sample(nrow(data), 900) 
+data_train <- data[train_indices, ] 
+data_test <- data[-train_indices, ] 
+knnpredict <- knn(train=data_train[, -5], test=data_test[, -5], 
+cl=data_train$creditScore, k=5) 
+confusionMatrix(table(knnpredict, data_test$creditScore), 
+positive='good')
